@@ -1,0 +1,137 @@
+<html>
+<head>
+	<title>Project Basket Case</title>
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700,700italic' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+</head>
+<body>
+	<div id="wrapper">
+		<div id="game-wrapper">
+			<div id="year-wrapper">Year: <div id="year">1000</div></div>
+			<div id="game-title">Project Basket Case</div>
+
+			<canvas id="main-canvas" width="800" height="600">
+
+			</canvas>
+			<div id="message-log">
+				<div id="message-log-title">Message Log</div>
+				<div id="message-log-messages"></div>
+			</div>
+			<div id="info-screen">
+				<input name='tabs' type="radio" id="civ-tab" class="tab" checked>
+				<label for="civ-tab">Civilization Stats</label>
+				<input name='tabs' type="radio" id="terr-tab" class="tab">
+				<label for="terr-tab">Territory Stats</label>
+				<table id="info-table-civ">
+					<tr>
+						<td class="info-label">Name: </td>
+						<td class="info-civ-name"></td>
+						<td class="info-label">Leader: </td>
+						<td class="info-civ-leader"></td>
+						<td class="info-label">Military: </td>
+						<td class="info-civ-military"></td>
+					</tr>
+					<tr>
+						<td class="info-label">Population: </td>
+						<td class="info-civ-population"></td>
+						<td class="info-label">Culture: </td>
+						<td class="info-civ-culture"></td>
+						<td class="info-label">Science: </td>
+						<td class="info-civ-science"></td>
+					</tr>
+					<tr>
+						<td class="info-label">Happiness: </td>
+						<td class="info-civ-happiness"></td>
+						<td class="info-label">Production: </td>
+						<td class="info-civ-production"></td>
+						<td class="info-label">Wealth: </td>
+						<td class="info-civ-wealth"></td>
+					</tr>
+					<tr>
+						<td class="info-label">Trait: </td>
+						<td class="info-civ-trait"></td>
+						<td class="info-label">Strength: </td>
+						<td class="info-civ-strength"></td>
+						<td class="info-label">Weakness: </td>
+						<td class="info-civ-weakness"></td>
+					</tr>
+				</table>
+				<table id="info-table-overview">
+					<tr>
+						<td>Civilizations: </td>
+						<td class="info-overview-civs"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+				</table>
+
+				<table id="info-table-terr">
+					<tr>
+						<td>Name: </td>
+						<td class="info-terr-name"></td>
+						<td>Owner: </td>
+						<td class="info-terr-owner"></td>
+						<td>Population: </td>
+						<td class="info-terr-population"></td>
+					</tr>
+					<tr>
+						<td>Growth Rate: </td>
+						<td class="info-terr-growthrate"></td>
+						<td>Fertility: </td>
+						<td class="info-terr-fertility"></td>
+						<td>Biome: </td>
+						<td class="info-terr-biome"></td>
+					</tr>
+					
+				</table>
+
+				<table id="info-table-world">
+					<tr>
+						<td class="info-label">World Name: </td>
+						<td class="info-world-name"></td>
+						<td class="info-label">Population: </td>
+						<td class="info-world-population"></td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+				</table>
+			</div>
+		</div>
+		<div id="options-wrapper">
+			<table>
+				<tr>
+					<td>
+			<form id="options-mapLayer">
+				<h3>Map Layer</h3>
+				<input type="radio" name="mapLayer" id="mapLayerContinents" checked><label for="mapLayerContinents">Continents</label><br />
+				<input type="radio" name="mapLayer" id="mapLayerTerrain" ><label for="mapLayerTerrain">Terrain</label><br />
+				<input type="radio" name="mapLayer" id="mapLayerCivilizations" checked><label for="mapLayerCivilizations">Civilizations</label>
+
+			</form>
+		</td><td>
+			<form>
+				<h3>Options</h3>
+				<input type="checkbox" id="optionsEvents" checked><label for="optionsEvents">Show Events on the Map</label><br />
+				<input type="checkbox" id="optionsTerritory" checked><label for="optionsTerritory">Show Selected Territory</label><br />
+				<input type="checkbox" id="optionsCivilization" checked><label for="optionsCivilization">Show Selected Civilization</label>
+			</form>
+		</td>
+		</tr>
+		</table>
+			
+		</div>
+		<div id="footer">
+			Copyright 2015 | All Rights Reserved<br />
+			Any relation to events, nations, or persons living or dead is purely coincidental.
+		</div>
+	</div>
+
+	<script src="main.js"></script>
+</body>
+</html>
