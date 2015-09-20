@@ -62,8 +62,9 @@ body{
 
 #wrapper{
 	width:100%;
-	height:100vh;
+	height:99vh;
 	background-color: #CAEFFF;
+	padding-top:1vh;
 }
 
 #game-wrapper{
@@ -72,16 +73,18 @@ body{
 	height:auto;
 	background-color:#0899E2;
 	margin: auto;
+	margin-bottom:5px;
 	border: 1px solid #8A8A8A;
 	box-shadow: #8E8E8E 1px 1px 3px
 }
 
-#options-wrapper{
+#options-wrapper, #release-notes-wrapper{
 	width:70%;
 	max-width: 1000px;
 	height:auto;
 	background-color:#E4E4E4;
-	margin: 5px auto;
+	margin: 0px auto 5px;
+	margin-top:0px;
 	border: 1px solid #8A8A8A;
 	box-shadow: #8E8E8E 1px 1px 3px;
 }
@@ -90,6 +93,21 @@ body{
 	font-size:24px;
 	padding:5px;
 	margin:0px;
+}
+
+#release-notes-wrapper div.release-note{
+	margin: 5px;
+}
+
+#release-notes-wrapper div.release-note h4{
+	margin-bottom:2px;
+	font-size:22px;
+	text-shadow:#D8D8D8 1px 1px;
+}
+
+#release-notes-wrapper div.release-note ul li{
+	list-style-type:disc;
+	margin-left:25px;
 }
 
 #year-wrapper{
@@ -107,7 +125,7 @@ body{
 	display:inline-block;
 }
 
-#game-title{
+#game-title,  #release-notes-wrapper h3{
     width: 100%;
     font-size:36px;
     font-size: 4vmin;
@@ -210,3 +228,21 @@ td{
 	bottom:8px;
 }
 
+#footer a{
+	color:blue;
+	text-decoration:none;
+	margin-top:5px;
+}
+
+#footer a:hover{
+	text-decoration:underline;
+}
+
+.noscript-message{
+	position:absolute;
+	top:50%;
+	text-align:center;
+	margin:auto;
+	display:block;
+	width:100vw;
+}

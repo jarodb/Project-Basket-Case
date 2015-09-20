@@ -20,8 +20,6 @@ var selectedTerr = -1;
 
 var lastEvent = 0;
 
-var worldName = getRandomTerrName();
-
 var running = true;
 
 const FPS = 20;
@@ -59,14 +57,24 @@ function getRandomCivName() {
     }
 }
 
+var terrPrefixes = ["New", "South", "East", "West", "North"];
+var terrNamesPart1 = ["Alab", "Al", "Ariz", "Ark", "Cal", "Color", "Connect", "Del", "Fl", "Georg", "Haw", "Id", "Ill", "Ind", "Kent", "Mex"];
+var terrNamesPart2 = ["ama", "aska", "ona", "ansas", "ifornia", "ado", "icut", "aware", "orida", "ia", "aii", "aho", "inois", "ucky", "land", "ada", "ico"];
+
 function getRandomTerrName() {
-    return "Territory " + Math.floor(Math.random() * 10);
+    var prefix = terrPrefixes[Math.floor(Math.random()*terrPrefixes.length)];
+    var name = terrNamesPart1[Math.floor(Math.random()*terrNamesPart1.length)] + terrNamesPart2[Math.floor(Math.random()*terrNamesPart2.length)];
+    if(Math.random() > .7){
+        return prefix + " " + name;
+    }
+    return name;
+    
 }
 
+var worldName = getRandomTerrName();
+
 var leaderPrefixes = ["King", "Prince", "President", "Glorious Leader", "Doge"];
-
 var leaderFirstNames = ["Peter", "Catherine", "Jarod", "Jared", "Alexander", "George", "Bob", "Robert", "Jack", "Rodney", "Steve", "Steven", "Dexter"];
-
 var leaderLastNames = ["Washington", "Smith", "Wilson", "Miller", "Lewis", "Chavez",
     "Johnson", "Obama", "Clinton", "Bush", "Holland", "Armstrong"
 ];
@@ -344,7 +352,7 @@ function message(m, type) {
 }
 
 function createTerritories() {
-    for (var i = 0; i < 13; i++) {
+    for (var i = 0; i < 9; i++) {
         territories.push(new territory(
             i,
             Math.floor(Math.random() * (c.width / 4) + 105),
@@ -354,10 +362,10 @@ function createTerritories() {
         ))
     }
 
-    for (var i = 13; i < 25; i++) {
+    for (var i = 9; i < 20; i++) {
         territories.push(new territory(
             i,
-            Math.floor(Math.random() * (c.width / 4)) + c.width / 2 + 105,
+            Math.floor(Math.random() * (c.width / 4)) + (c.width>>1) - 5 + 105,
             Math.floor(Math.random() * (c.height - 240)) + 120,
             Math.floor(Math.random() * 50) + 50,
             i
@@ -368,6 +376,12 @@ function createTerritories() {
     });
 
     findNeighbors();
+
+    for(var i = 0; i < territories.length; i++){
+        if(territories[i].neighbors.length === 0){
+            territories[i].name += " Island";
+        }
+    }
 }
 
 function createCivilizations() {
@@ -417,18 +431,15 @@ function update() {
         }
 
         //Increment the population
+        var baseMultiplier = 200;
         if(focused){
-            for (var i = 0; i < territories.length; i++) {
-                territories[i].population = Math.floor(
-                    territories[i].population*Math.pow(Math.E, ((territories[i].fertility/10))/(FPS*2)/100)
-                );
-            }
-        }else{
-            for (var i = 0; i < territories.length; i++) {
-                territories[i].population = Math.floor(
-                    territories[i].population*Math.pow(Math.E, ((territories[i].fertility/40))/(2)/100)
-                );            
-            }
+            baseMultiplier *= FPS;
+        }
+        for (var i = 0; i < territories.length; i++) {
+            var multiplier = baseMultiplier;
+            territories[i].population = Math.floor(
+                territories[i].population*Math.pow(Math.E, ((territories[i].fertility/10))/(multiplier))
+            );
         }
 
         updateCivPopulations();
@@ -436,7 +447,10 @@ function update() {
 
         //Deal with wars
         for(var i = 0; i < wars.length; i++){
-            if(wars[i].aggressor.military > (wars[i].defender.military + wars[i].defender.culture*10000) ||
+            if(!wars[i].defender || !wars[i].aggressor){
+                wars.splice(i,1);
+            }else{
+                if(wars[i].aggressor.military > (wars[i].defender.military + wars[i].defender.culture*10000) ||
                 wars[i].defender.military > (wars[i].aggressor.military + wars[i].aggressor.culture*10000)){
 
                 var def;
@@ -455,11 +469,13 @@ function update() {
                 defenderTerrs[tradedTerr].owner = off.id;
                 defenderTerrs[tradedTerr].negativeAlert = 1;
                 message(off.name + " has taken over " + defenderTerrs[tradedTerr].name, -1);
-                if(defenderTerrs.length - 1 <= 0){
-                    wars.splice(i);
-
+                if(defenderTerrs.length - 1 <= 0){                  
+                    civilizations.splice(civilizations.indexOf(getCivilizationById(def.id)),1);
+                    wars.splice(i,1);
                 }
             }
+            }
+            
         }
 
         //Run an event
@@ -489,13 +505,13 @@ function draw() {
         var t = territories[i];
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(t.x, t.y, t.radius, 0, 2 * Math.PI);
+        ctx.arc(t.x, t.y, t.radius, 0, Math.PI*2);
         ctx.stroke();
         ctx.closePath();
 
         ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.arc(t.x + 2, t.y + 2, t.radius, 0, 2 * Math.PI);
+        ctx.arc(t.x + 2, t.y + 2, t.radius, 0, Math.PI*2);
         ctx.stroke();
         ctx.closePath();
     }
@@ -528,20 +544,24 @@ function draw() {
             }
 
         } else if ($("#mapLayerCivilizations").prop("checked")) {
-            ctx.fillStyle = civilizations.filter(function(obj) {
-                return obj.id === territories[i].owner;
-            })[0].color;
+            try{
+                ctx.fillStyle = civilizations.filter(function(obj) {
+                    return obj.id === territories[i].owner;
+                })[0].color;
+            }catch(e){
+                ctx.fillStyle = "black";
+            }
         } else {
             ctx.fillStyle = "Green";
         }
 
         var t = territories[i];
-        ctx.strokeStyle = "#999999";
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#333333";
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(t.x, t.y, t.radius, 0, 2 * Math.PI);
         ctx.fill();
-        if ($("#mapLayerCivilizations").prop("checked")) {
+        if ($("#optionsBorders").prop("checked")) {
             ctx.stroke();
         }
         if (territories[i].owner == selectedCiv) {
@@ -625,7 +645,7 @@ function updateInfoScreen() {
         $(".info-terr-name").html(currTerr.name);
         $(".info-terr-owner").html(getTerrOwner(currTerr).name);
         $(".info-terr-population").html(numberWithCommas(currTerr.population));
-        $(".info-terr-growthrate").html(numberWithCommas(Math.floor(currTerr.population*Math.pow(Math.E, ((currTerr.fertility/40))/(2)/100))- currTerr.population) + "/yr");
+        $(".info-terr-growthrate").html(numberWithCommas(Math.floor(currTerr.population*Math.pow(Math.E, (currTerr.fertility/10)/200) - currTerr.population)) + "/yr");
         $(".info-terr-fertility").html(fertilityLevels[currTerr.fertility - 1]);
         $(".info-terr-biome").html(currTerr.biome);
     }
@@ -680,7 +700,6 @@ $("#main-canvas").trigger("click");
 
 
 /*--------------Events----------------*/
-
 
 var disasters = [];
 
@@ -783,16 +802,32 @@ function startWar() {
     }
 
     var index = Math.random() * prioritiesCounter;
+
+    console.log(addedPriorities);
+    console.log(index);
+
     for (var i = 0; i < addedPriorities.length; i++) {
         if (index > addedPriorities[i]) {
-            aggressor = civilizations[i - 1];
+            aggressor = civilizations[i];
         }
+    }
+    if(!aggressor){
+        aggressor = civilizations[0];
     }
     /*---------Select a defender----------*/
     var possibleDefenders = getCivNeighbors(aggressor.id);
-    if (possibleDefenders !== []) {
-        defender = getCivilizationById(possibleDefenders[Math.floor(Math.random() * possibleDefenders.length)]);
+    console.log(possibleDefenders);
+    if (possibleDefenders.length == 0) {
+        for(var i = 0; i < civilizations.length; i++){
+            if(civilizations[i].id != aggressor.id){
+                possibleDefenders.push(civilizations[i]);
+                console.log("No neighbors detected");
+                console.log(possibleDefenders);
+            }
+        }
     }
+    
+    defender = getCivilizationById(possibleDefenders[Math.floor(Math.random() * possibleDefenders.length)]);
 
     var duplicateWar = false;
     for (var i = 0; i < wars.length; i++) {
